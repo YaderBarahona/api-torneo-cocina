@@ -2,7 +2,7 @@ import app from "../src/app.js";
 import { AppDataSource } from "../src/config/database.js";
 
 const PORT = process.env.PORT || 3000;
-const HOST = process.env.HOST || "0.0.0.0"; 
+const HOST = process.env.HOST || "localhost"; 
 
 AppDataSource.initialize()
   .then(() => {
