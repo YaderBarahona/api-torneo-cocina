@@ -1,0 +1,726 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API de Torneo de Cocina",
+    "version": "1.0.0",
+    "description": "Documentación de la API del torneo de cocina"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/api",
+      "description": "Servidor de desarrollo"
+    }
+  ],
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "summary": "Registrar un nuevo usuario",
+        "tags": ["Auth"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Nombre del usuario",
+                    "example": "Juan Pérez"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "Correo electrónico único",
+                    "example": "juan@example.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "description": "Contraseña del usuario",
+                    "example": "123456"
+                  }
+                },
+                "required": ["name", "email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuario registrado con éxito",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Usuario registrado"
+                    },
+                    "user": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "name": {
+                          "type": "string",
+                          "example": "Juan Pérez"
+                        },
+                        "email": {
+                          "type": "string",
+                          "example": "juan@example.com"
+                        }
+                      }
+                    },
+                    "token": {
+                      "type": "string",
+                      "example": "eyJhbGciOiJIUzI1..."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error en la validación"
+          },
+          "409": {
+            "description": "El email ya está registrado"
+          },
+          "500": {
+            "description": "Error interno del servidor",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Error interno del servidor."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "Iniciar sesión",
+        "tags": ["Auth"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "Correo electrónico",
+                    "example": "juan@example.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "description": "Contraseña",
+                    "example": "123456"
+                  }
+                },
+                "required": ["email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Inicio de sesión exitoso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Inicio de sesión exitoso"
+                    },
+                    "user": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "name": {
+                          "type": "string",
+                          "example": "Juan Pérez"
+                        },
+                        "email": {
+                          "type": "string",
+                          "example": "juan@example.com"
+                        }
+                      }
+                    },
+                    "token": {
+                      "type": "string",
+                      "example": "eyJhbGciOiJIUzI1..."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error en la validación"
+          },
+          "401": {
+            "description": "Credenciales incorrectas"
+          },
+          "500": {
+            "description": "Error interno del servidor",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Error interno del servidor."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chefs": {
+      "post": {
+        "summary": "Registrar un nuevo chef",
+        "tags": ["Chefs"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "María López"
+                  },
+                  "specialty": {
+                    "type": "string",
+                    "example": "Cocina Mediterránea"
+                  },
+                  "experienceYears": {
+                    "type": "integer",
+                    "example": 5
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Chef registrado correctamente"
+          },
+          "400": {
+            "description": "Error en la validación"
+          },
+          "500": {
+            "description": "Error interno del servidor",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Error interno del servidor."
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Obtener todos los chefs registrados",
+        "tags": ["Chefs"],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Lista de chefs"
+          },
+          "500": {
+            "description": "Error interno del servidor",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Error interno del servidor."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tournaments": {
+      "post": {
+        "summary": "Crear un nuevo torneo de cocina",
+        "tags": ["Tournaments"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "MasterChef Spring Edition"
+                  },
+                  "location": {
+                    "type": "string",
+                    "example": "Cartagena"
+                  },
+                  "maxChefs": {
+                    "type": "integer",
+                    "example": 10
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Torneo creado correctamente"
+          },
+          "400": {
+            "description": "Error en la validación"
+          },
+          "500": {
+            "description": "Error interno del servidor",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Error interno del servidor."
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Obtener todos los torneos",
+        "tags": ["Tournaments"],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Lista de torneos"
+          },
+          "500": {
+            "description": "Error interno del servidor",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Error interno del servidor."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tournaments/{id}/register": {
+      "post": {
+        "summary": "Registrar un chef en un torneo",
+        "tags": ["Tournaments"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID del torneo donde se registrará el chef",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "chefId": {
+                    "type": "integer",
+                    "description": "ID del chef que se registrará en el torneo",
+                    "example": 3
+                  }
+                },
+                "required": ["chefId"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Chef registrado en el torneo"
+          },
+          "400": {
+            "description": "El torneo ya está lleno o el chef ya está registrado"
+          },
+          "404": {
+            "description": "Torneo o chef no encontrado"
+          },
+          "500": {
+            "description": "Error interno del servidor",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Error interno del servidor."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tournaments/{id}/submit": {
+      "post": {
+        "summary": "Registrar el puntaje de un chef en un torneo",
+        "tags": ["Tournaments"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID del torneo donde se registrará el puntaje",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "chefId": {
+                    "type": "integer",
+                    "description": "ID del chef que recibirá el puntaje",
+                    "example": 3
+                  },
+                  "score": {
+                    "type": "integer",
+                    "description": "Puntaje del chef (0 a 100)",
+                    "minimum": 0,
+                    "maximum": 100,
+                    "example": 85
+                  }
+                },
+                "required": ["chefId", "score"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Puntaje registrado correctamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Puntaje registrado correctamente"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "tournament": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer",
+                              "example": 1
+                            }
+                          }
+                        },
+                        "chef": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer",
+                              "example": 3
+                            }
+                          }
+                        },
+                        "score": {
+                          "type": "integer",
+                          "example": 85
+                        },
+                        "id": {
+                          "type": "integer",
+                          "example": 5
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error en la validación o puntaje fuera de rango"
+          },
+          "404": {
+            "description": "El chef no está registrado en este torneo"
+          },
+          "500": {
+            "description": "Error interno del servidor",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Error interno del servidor."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tournaments/{id}/ranking": {
+      "get": {
+        "summary": "Consultar el ranking final del torneo",
+        "tags": ["Tournaments"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID del torneo del cual se consultará el ranking",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ranking del torneo",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tournament": {
+                      "type": "string",
+                      "example": "MasterChef Spring Edition"
+                    },
+                    "location": {
+                      "type": "string",
+                      "example": "Cartagena"
+                    },
+                    "ranking": {
+                      "type": "array",
+                      "description": "Lista de chefs ordenados por puntaje de mayor a menor",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "chef": {
+                            "type": "string",
+                            "example": "María López"
+                          },
+                          "score": {
+                            "type": "integer",
+                            "example": 95
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Torneo no encontrado"
+          },
+          "500": {
+            "description": "Error interno del servidor",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Error interno del servidor."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tournaments/{id}/categories": {
+      "post": {
+        "summary": "Asignar categorías a un torneo",
+        "tags": ["Tournaments"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID del torneo al que se asignarán las categorías",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "categoryIds": {
+                    "type": "array",
+                    "description": "Lista de IDs de categorías a asignar",
+                    "items": {
+                      "type": "integer"
+                    },
+                    "example": [1, 2]
+                  }
+                },
+                "required": ["categoryIds"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Categorías asignadas correctamente"
+          },
+          "400": {
+            "description": "Error en la validación"
+          },
+          "404": {
+            "description": "Torneo o categorías no encontradas"
+          },
+          "500": {
+            "description": "Error interno del servidor",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Error interno del servidor."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/categories": {
+      "post": {
+        "summary": "Crear una nueva categoría",
+        "tags": ["Categories"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Nombre de la categoría de cocina",
+                    "example": "Postres"
+                  }
+                },
+                "required": ["name"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Categoría creada correctamente"
+          },
+          "400": {
+            "description": "Error en la validación"
+          },
+          "409": {
+            "description": "La categoría ya existe"
+          },
+          "500": {
+            "description": "Error interno del servidor",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Error interno del servidor."
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Obtener todas las categorías",
+        "tags": ["Categories"],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Lista de categorías",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer",
+                        "example": 1
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "Postres"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "Error interno del servidor."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Ingrese el token JWT en el siguiente formato: Bearer {token}"
+      }
+    }
+  }
+}
